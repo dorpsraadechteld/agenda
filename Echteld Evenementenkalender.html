@@ -1,0 +1,1199 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Evenementenkalender Echteld</title>
+  <style>
+    :root {
+      --bg: #050a08;
+      --surface: rgba(13, 24, 19, 0.82);
+      --surface-2: rgba(255, 255, 255, 0.055);
+      --text: #f2fff7;
+      --muted: #9fb3a7;
+      --accent: #35d07f;
+      --accent-2: #38bdf8;
+      --accent-dark: #16a365;
+      --accent-soft: rgba(53, 208, 127, 0.14);
+      --border: rgba(230, 255, 241, 0.11);
+      --danger: #fb7185;
+      --shadow: 0 28px 80px rgba(0, 0, 0, 0.42);
+      --shadow-soft: 0 12px 34px rgba(0, 0, 0, 0.30);
+      --radius: 28px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 12% 7%, rgba(53, 208, 127, 0.22), transparent 31rem),
+        radial-gradient(circle at 88% 3%, rgba(56, 189, 248, 0.15), transparent 28rem),
+        radial-gradient(circle at 50% 94%, rgba(132, 204, 22, 0.09), transparent 25rem),
+        linear-gradient(180deg, #07110d 0%, #040806 58%, #08120e 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    header {
+      width: min(1180px, calc(100% - 32px));
+      margin: 24px auto 18px;
+      padding: clamp(42px, 7vw, 82px) 24px;
+      text-align: center;
+      border-radius: 38px;
+      background:
+        radial-gradient(circle at 18% 20%, rgba(255, 255, 255, 0.13), transparent 18rem),
+        radial-gradient(circle at 82% 12%, rgba(53, 208, 127, 0.22), transparent 14rem),
+        linear-gradient(135deg, rgba(13, 35, 25, 0.96) 0%, rgba(16, 78, 52, 0.92) 54%, rgba(8, 18, 14, 0.96) 100%);
+      color: white;
+      box-shadow: 0 28px 90px rgba(0, 0, 0, 0.46), inset 0 1px 0 rgba(255, 255, 255, 0.13);
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::after {
+      content: "";
+      position: absolute;
+      right: -8rem;
+      bottom: -10rem;
+      width: 24rem;
+      height: 24rem;
+      border-radius: 999px;
+      background: rgba(53, 208, 127, 0.16);
+      pointer-events: none;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 15px;
+      border-radius: 999px;
+      background: rgba(53, 208, 127, 0.13);
+      color: #dfffee;
+      border: 1px solid rgba(53, 208, 127, 0.30);
+      font-weight: 850;
+      font-size: 14px;
+      margin-bottom: 18px;
+      box-shadow: 0 0 34px rgba(53, 208, 127, 0.13);
+      backdrop-filter: blur(12px);
+      position: relative;
+      z-index: 1;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(42px, 7vw, 82px);
+      letter-spacing: -0.075em;
+      line-height: 0.92;
+      font-weight: 950;
+      position: relative;
+      z-index: 1;
+      text-shadow: 0 16px 38px rgba(0, 0, 0, 0.25);
+    }
+
+    .subtitle {
+      margin: 22px auto 0;
+      max-width: 760px;
+      color: rgba(230, 255, 241, 0.74);
+      font-size: clamp(16px, 2vw, 20px);
+      line-height: 1.6;
+      position: relative;
+      z-index: 1;
+    }
+
+    .topnav {
+      width: fit-content;
+      max-width: calc(100% - 32px);
+      margin: -6px auto 26px;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding: 7px;
+      border-radius: 999px;
+      background: rgba(10, 22, 16, 0.80);
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(18px);
+    }
+
+    .topnav button {
+      min-width: 145px;
+      box-shadow: none;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--muted);
+    }
+
+    .topnav button:hover {
+      background: rgba(53, 208, 127, 0.10);
+      color: #dfffee;
+      transform: none;
+    }
+
+    .topnav button.active {
+      color: #04110a;
+      background: linear-gradient(135deg, #8ff0bd, var(--accent));
+      box-shadow: 0 12px 28px rgba(53, 208, 127, 0.28);
+    }
+
+    main {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto 44px;
+    }
+
+    .page { display: none; }
+    .page.active { display: block; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(22px);
+      overflow: hidden;
+    }
+
+    .card-inner { padding: clamp(18px, 3vw, 30px); }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 20px 22px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .month-title {
+      font-size: clamp(22px, 3vw, 30px);
+      font-weight: 950;
+      letter-spacing: -0.045em;
+      text-transform: capitalize;
+    }
+
+    .buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    button,
+    .button {
+      border: 0;
+      background: linear-gradient(135deg, #8ff0bd, var(--accent));
+      color: #04110a;
+      font-weight: 850;
+      padding: 11px 15px;
+      border-radius: 14px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: 0 12px 28px rgba(53, 208, 127, 0.18);
+    }
+
+    button:hover,
+    .button:hover { transform: translateY(-1px); }
+
+    button.secondary,
+    .button.secondary {
+      background: rgba(255, 255, 255, 0.07);
+      color: var(--text);
+      box-shadow: none;
+      border: 1px solid var(--border);
+    }
+
+    button.secondary:hover,
+    .button.secondary:hover { background: rgba(255, 255, 255, 0.12); }
+
+    .calendar { padding: 22px; }
+
+    .weekdays,
+    .days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+    }
+
+    .weekday {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      padding: 9px 0;
+    }
+
+    .day {
+      min-height: 122px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.045);
+      padding: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.16);
+    }
+
+    .day.other-month {
+      opacity: 0.38;
+      background: rgba(255, 255, 255, 0.025);
+    }
+
+    .day.today {
+      border-color: rgba(53, 208, 127, 0.65);
+      box-shadow: inset 0 0 0 2px rgba(53, 208, 127, 0.18), 0 0 28px rgba(53, 208, 127, 0.10);
+      background: rgba(53, 208, 127, 0.07);
+    }
+
+    .day-number {
+      font-weight: 900;
+      font-size: 14px;
+      margin-bottom: 7px;
+      width: 28px;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.075);
+      color: var(--text);
+    }
+
+    .day.today .day-number { background: var(--accent); color: #04110a; }
+
+    .event-pill {
+      display: block;
+      width: 100%;
+      text-align: left;
+      margin: 6px 0 0;
+      padding: 7px 9px;
+      border-radius: 999px;
+      background: var(--event-soft, var(--accent-soft));
+      color: var(--event-color, var(--accent));
+      border-left: 0;
+      font-size: 12px;
+      line-height: 1.25;
+      font-weight: 850;
+      box-shadow: none;
+      cursor: pointer;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .event-pill:hover { transform: none; filter: brightness(1.08); }
+
+    .page-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .page-heading h2 {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 40px);
+      letter-spacing: -0.05em;
+      font-weight: 950;
+    }
+
+    .page-heading p,
+    .muted { margin: 7px 0 0; color: var(--muted); line-height: 1.45; }
+
+    .filters {
+      display: grid;
+      grid-template-columns: 1fr 240px;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding: 12px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.045);
+      border: 1px solid var(--border);
+    }
+
+    input,
+    select {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 13px;
+      font: inherit;
+      background: rgba(255, 255, 255, 0.075);
+      color: var(--text);
+      outline: none;
+    }
+
+    input::placeholder { color: rgba(242, 255, 247, 0.42); }
+
+    input:focus,
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(53, 208, 127, 0.15);
+    }
+
+    select option { background: #0f1f17; color: var(--text); }
+
+    .legend {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 0 0 18px;
+      padding: 10px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.045);
+      border: 1px solid var(--border);
+    }
+
+    .legend-item,
+    .org-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      width: fit-content;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--event-soft, var(--accent-soft));
+      color: var(--event-color, var(--accent));
+      font-size: 12px;
+      font-weight: 850;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .legend-item {
+      cursor: pointer;
+      transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .legend-item:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.12);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+    }
+
+    .legend-item.active-filter {
+      outline: 2px solid var(--event-color, var(--accent));
+      outline-offset: 2px;
+      box-shadow: 0 0 0 4px rgba(53, 208, 127, 0.10);
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--event-color, var(--accent));
+      flex: 0 0 auto;
+    }
+
+    .event-list { display: grid; gap: 12px; }
+
+    .event-card {
+      border: 1px solid var(--border);
+      border-left: 0;
+      border-radius: 22px;
+      padding: 18px 20px;
+      background: rgba(255, 255, 255, 0.055);
+      text-align: left;
+      box-shadow: var(--shadow-soft);
+      color: var(--text);
+      width: 100%;
+      display: grid;
+      grid-template-columns: minmax(210px, 1.15fr) minmax(230px, 0.95fr) minmax(280px, 1.55fr);
+      column-gap: 24px;
+      row-gap: 7px;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .event-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 7px;
+      background: var(--event-color, var(--accent));
+    }
+
+    .event-card:hover {
+      background: rgba(255, 255, 255, 0.085);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .event-card .org-label { grid-column: 1; grid-row: 1; align-self: end; }
+
+    .event-card strong {
+      display: block;
+      grid-column: 1;
+      grid-row: 2;
+      font-size: 20px;
+      line-height: 1.22;
+      margin: 0;
+      align-self: start;
+      letter-spacing: -0.02em;
+    }
+
+    .event-card .event-meta { grid-column: 2; grid-row: 1 / span 2; align-self: center; }
+    .event-card .event-description { grid-column: 3; grid-row: 1 / span 2; align-self: center; }
+
+    .event-meta { color: var(--muted); font-size: 14px; line-height: 1.55; }
+    .event-description { margin-top: 0; color: var(--text); line-height: 1.55; }
+
+    .empty,
+    .hint,
+    .error {
+      font-size: 15px;
+      line-height: 1.5;
+      padding: 16px;
+      border-radius: 16px;
+      margin-bottom: 16px;
+    }
+
+    .empty {
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.045);
+      border: 1px dashed var(--border);
+    }
+
+    .hint {
+      background: rgba(53, 208, 127, 0.10);
+      color: #dfffee;
+      border: 1px solid rgba(53, 208, 127, 0.20);
+    }
+
+    .error {
+      background: rgba(251, 113, 133, 0.12);
+      color: #fecdd3;
+      border: 1px solid rgba(251, 113, 133, 0.25);
+      display: none;
+    }
+
+    .error.active { display: block; }
+
+    .sheet-table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.055);
+      border: 1px solid var(--border);
+    }
+
+    .sheet-table th,
+    .sheet-table td {
+      text-align: left;
+      padding: 10px;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+
+    .sheet-table th {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    dialog {
+      width: min(540px, calc(100% - 30px));
+      border: 0;
+      border-radius: 22px;
+      padding: 0;
+      box-shadow: var(--shadow);
+      background: #0f1f17;
+      color: var(--text);
+    }
+
+    dialog::backdrop { background: rgba(0, 0, 0, 0.62); backdrop-filter: blur(6px); }
+
+    .modal {
+      padding: 22px;
+      border-top: 8px solid var(--event-color, var(--accent));
+      background: #0f1f17;
+      color: var(--text);
+    }
+
+    .modal h3 { margin: 0 0 8px; font-size: 24px; }
+    .modal p { margin: 0 0 14px; color: var(--muted); line-height: 1.5; }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 900px) {
+      .filters { grid-template-columns: 1fr; }
+      .day { min-height: 96px; }
+
+      .event-card { grid-template-columns: 1fr; row-gap: 8px; }
+
+      .event-card .org-label,
+      .event-card strong,
+      .event-card .event-meta,
+      .event-card .event-description {
+        grid-column: 1;
+        grid-row: auto;
+      }
+    }
+
+    @media (max-width: 680px) {
+      header { margin-top: 14px; border-radius: 26px; }
+      .toolbar { align-items: stretch; flex-direction: column; }
+      .buttons { display: grid; grid-template-columns: repeat(3, 1fr); }
+      .weekday { font-size: 11px; }
+      .calendar { padding: 10px; }
+      .weekdays, .days { gap: 5px; }
+      .day { min-height: 78px; border-radius: 13px; padding: 6px; }
+      .event-pill { font-size: 11px; padding: 5px 6px; }
+      .topnav button { flex: 1 1 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="badge">🌳 Dorpsagenda Echteld</div>
+    <h1>Evenementen in Echteld</h1>
+    <p class="subtitle">Een overzichtelijke kalender voor activiteiten, markten, vergaderingen, verenigingen en dorpsfeesten.</p>
+  </header>
+
+  <nav class="topnav" aria-label="Hoofdnavigatie">
+    <button id="navCalendar" class="active" data-page="calendarPage">📅 Agenda</button>
+    <button id="navList" class="secondary" data-page="listPage">📋 Lijst</button>
+  </nav>
+
+  <main>
+    <section id="calendarPage" class="page active">
+      <div class="card">
+        <div class="toolbar">
+          <div class="month-title" id="monthTitle"></div>
+          <div class="buttons">
+            <button class="secondary" id="prevBtn">← Vorige</button>
+            <button class="secondary" id="todayBtn">Vandaag</button>
+            <button class="secondary" id="nextBtn">Volgende →</button>
+          </div>
+        </div>
+
+        <div class="calendar">
+          <div id="calendarMessage"></div>
+          <div id="calendarLegend" class="legend"></div>
+          <div class="weekdays">
+            <div class="weekday">Ma</div>
+            <div class="weekday">Di</div>
+            <div class="weekday">Wo</div>
+            <div class="weekday">Do</div>
+            <div class="weekday">Vr</div>
+            <div class="weekday">Za</div>
+            <div class="weekday">Zo</div>
+          </div>
+          <div class="days" id="days"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="listPage" class="page">
+      <div class="card card-inner">
+        <div class="page-heading">
+          <div>
+            <h2>Evenementenlijst</h2>
+            <p>Alle aankomende activiteiten netjes onder elkaar.</p>
+          </div>
+          <button id="refreshBtn">Ververs agenda</button>
+        </div>
+
+
+        <div id="listLegend" class="legend"></div>
+        <div id="eventList" class="event-list"></div>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="eventDialog">
+    <div class="modal" id="eventModalContent">
+      <h3 id="dialogTitle"></h3>
+      <p id="dialogMeta"></p>
+      <p id="dialogDescription"></p>
+      <div class="modal-actions">
+        <button id="closeDialogBtn">Sluiten</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script>
+    /******************************************************************
+     * HIER INVULLEN - GOOGLE SHEET LINKS
+     *
+     * 1. AGENDA_CSV_URL        = CSV-link van tabblad Agenda
+     * 2. INSTELLINGEN_CSV_URL  = CSV-link van tabblad instellingen
+     ******************************************************************/
+    const AGENDA_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTJ_Fqm870i6ZagNXEmnHsPpTheMR6Po17AN_qL9my2rnTrD6efB1Rh3xzmFw2ZcjcVgBtAwXYhorHK/pub?gid=0&single=true&output=csv";
+    const INSTELLINGEN_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTJ_Fqm870i6ZagNXEmnHsPpTheMR6Po17AN_qL9my2rnTrD6efB1Rh3xzmFw2ZcjcVgBtAwXYhorHK/pub?gid=1955542675&single=true&output=csv";
+
+    const fallbackOrganizations = [
+      "VOLO",
+      "Oranjevereniging",
+      "Dorpsvereniging",
+      "Voetbalvereniging",
+      "Corso",
+      "Dorpshuis",
+      "Dorpsraad",
+      "Darts"
+    ];
+
+    let instellingenOrganizations = [];
+    let instellingenColors = {};
+
+    const colorPalette = [
+      { color: "#2f7d57", soft: "#e4f1ea" },
+      { color: "#2563eb", soft: "#dbeafe" },
+      { color: "#c2410c", soft: "#ffedd5" },
+      { color: "#7c3aed", soft: "#ede9fe" },
+      { color: "#be123c", soft: "#ffe4e6" },
+      { color: "#0f766e", soft: "#ccfbf1" },
+      { color: "#a16207", soft: "#fef3c7" },
+      { color: "#4338ca", soft: "#e0e7ff" },
+      { color: "#15803d", soft: "#dcfce7" },
+      { color: "#0369a1", soft: "#e0f2fe" }
+    ];
+
+    const demoEvents = [
+      {
+        title: "Dorpskoffie bij het dorpshuis",
+        date: todayIso(),
+        time: "10:00",
+        location: "Dorpshuis Echteld",
+        organization: "Dorpshuis",
+        category: "Algemeen",
+        description: "Gezellig samenkomen voor inwoners van Echteld. Koffie, bijpraten en nieuwtjes uit het dorp.",
+        visible: "ja"
+      },
+      {
+        title: "Dartavond Echteld",
+        date: addDaysIso(8),
+        time: "19:30",
+        location: "Dorpshuis Echteld",
+        organization: "Darts",
+        category: "Sport",
+        description: "Gezellige dartavond voor spelers en toeschouwers. Aanmelden kan via de organisatie.",
+        visible: "ja"
+      },
+      {
+        title: "Zomermarkt Echteld",
+        date: addDaysIso(18),
+        time: "12:00",
+        location: "Centrum Echteld",
+        organization: "Oranjevereniging",
+        category: "Markt",
+        description: "Kramen, muziek, eten en activiteiten voor jong en oud.",
+        visible: "ja"
+      },
+      {
+        title: "Dorpsraad overleg",
+        date: addDaysIso(24),
+        time: "20:00",
+        location: "Dorpshuis Echteld",
+        organization: "Dorpsraad",
+        category: "Vergadering",
+        description: "Open overleg over onderwerpen die in het dorp spelen.",
+        visible: "ja"
+      },
+      {
+        title: "Corso voorbereidingsavond",
+        date: addDaysIso(31),
+        time: "19:30",
+        location: "Werkplaats",
+        organization: "Corso",
+        category: "Vereniging",
+        description: "Voorbereiding en afstemming voor de corsoactiviteiten.",
+        visible: "ja"
+      },
+      {
+        title: "Voetbalmiddag jeugd",
+        date: addDaysIso(38),
+        time: "14:00",
+        location: "Voetbalveld Echteld",
+        organization: "Voetbalvereniging",
+        category: "Sport",
+        description: "Sportieve middag voor de jeugd.",
+        visible: "ja"
+      },
+      {
+        title: "VOLO activiteit",
+        date: addDaysIso(45),
+        time: "15:00",
+        location: "Dorpshuis Echteld",
+        organization: "VOLO",
+        category: "Kinderen",
+        description: "Gezellige activiteit voor jong en oud.",
+        visible: "ja"
+      }
+    ];
+
+    let events = [];
+    let currentDate = new Date();
+    let selectedEvent = null;
+
+    const monthTitle = document.getElementById("monthTitle");
+    const daysEl = document.getElementById("days");
+    const eventList = document.getElementById("eventList");
+    const eventDialog = document.getElementById("eventDialog");
+    const eventModalContent = document.getElementById("eventModalContent");
+    let selectedOrganization = "";
+    const calendarLegend = document.getElementById("calendarLegend");
+    const listLegend = document.getElementById("listLegend");
+    const calendarMessage = document.getElementById("calendarMessage");
+
+    document.querySelectorAll(".topnav button").forEach(button => {
+      button.addEventListener("click", () => showPage(button.dataset.page));
+    });
+
+    document.getElementById("prevBtn").addEventListener("click", () => changeMonth(-1));
+    document.getElementById("nextBtn").addEventListener("click", () => changeMonth(1));
+    document.getElementById("todayBtn").addEventListener("click", () => {
+      currentDate = new Date();
+      render();
+    });
+    document.getElementById("refreshBtn").addEventListener("click", loadEventsFromSheet);
+    document.getElementById("closeDialogBtn").addEventListener("click", () => eventDialog.close());
+
+    async function loadEventsFromSheet() {
+      calendarMessage.innerHTML = "";
+
+      await loadInstellingenFromSheet();
+
+      if (!AGENDA_CSV_URL) {
+        events = normalizeEvents(demoEvents);
+        calendarMessage.innerHTML = `<div class="hint">Demo-modus: er is nog geen Agenda CSV-link ingevuld. De agenda gebruikt voorbeeldactiviteiten.</div>`;
+        render();
+        return;
+      }
+
+      try {
+        const response = await fetch(AGENDA_CSV_URL, { cache: "no-store" });
+        if (!response.ok) throw new Error("Agenda-tabblad kon niet worden geladen.");
+        const csv = await response.text();
+        events = normalizeEvents(csvToObjects(csv));
+        if (events.length === 0) {
+          calendarMessage.innerHTML = `<div class="hint">Het tabblad Agenda is geladen, maar er zijn nog geen zichtbare evenementen gevonden.</div>`;
+        }
+        render();
+      } catch (error) {
+        events = normalizeEvents(demoEvents);
+        calendarMessage.innerHTML = `<div class="error active">Het tabblad Agenda kon niet worden geladen. Controleer de CSV-link. Tijdelijk worden voorbeeldactiviteiten getoond.</div>`;
+        render();
+      }
+    }
+
+    async function loadInstellingenFromSheet() {
+      instellingenOrganizations = [];
+      instellingenColors = {};
+
+      if (!INSTELLINGEN_CSV_URL) return;
+
+      try {
+        const response = await fetch(INSTELLINGEN_CSV_URL, { cache: "no-store" });
+        if (!response.ok) throw new Error("Instellingen-tabblad kon niet worden geladen.");
+        const csv = await response.text();
+        const settings = csvToSettingsList(csv);
+        instellingenOrganizations = settings.organizations;
+        instellingenColors = settings.colors;
+      } catch (error) {
+        instellingenOrganizations = [];
+        instellingenColors = {};
+      }
+    }
+
+    function showPage(pageId) {
+      document.querySelectorAll(".page").forEach(page => {
+        page.classList.toggle("active", page.id === pageId);
+      });
+
+      document.querySelectorAll(".topnav button").forEach(button => {
+        const active = button.dataset.page === pageId;
+        button.classList.toggle("active", active);
+        button.classList.toggle("secondary", !active);
+      });
+
+      if (pageId === "listPage") renderList();
+    }
+
+    function normalizeEvents(rawEvents) {
+      return rawEvents
+        .map((item, index) => ({
+          id: clean(item.id) || String(index + 1),
+          title: clean(item.title || item.naam || item.evenement),
+          date: normalizeDate(item.date || item.datum),
+          time: clean(item.time || item.tijd),
+          location: clean(item.location || item.locatie),
+          organization: clean(item.organization || item.organisatie || item.vereniging || "Algemeen"),
+          category: clean(item.category || item.categorie || "Algemeen"),
+          description: clean(item.description || item.omschrijving || item.beschrijving),
+          visible: clean(item.visible || item.zichtbaar || "ja").toLowerCase()
+        }))
+        .filter(item => item.title && item.date)
+        .filter(item => !["nee", "no", "false", "0"].includes(item.visible));
+    }
+
+    function render() {
+      renderControls();
+      renderCalendar();
+      renderList();
+    }
+
+    function renderControls() {
+      const organizations = getOrganizations();
+      renderLegend(calendarLegend, organizations);
+      renderLegend(listLegend, organizations);
+    }
+
+    function fillSelect(select, firstLabel, values) {
+      const currentValue = select.value;
+      select.innerHTML = `<option value="">${firstLabel}</option>`;
+      values.forEach(value => {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = value;
+        select.appendChild(option);
+      });
+      select.value = values.includes(currentValue) ? currentValue : "";
+    }
+
+    function renderLegend(container, organizations) {
+      container.innerHTML = "";
+
+      const allButton = document.createElement("button");
+      allButton.type = "button";
+      allButton.className = "legend-item";
+      allButton.innerHTML = `<span class="legend-dot"></span>Alle`;
+      setEventColors(allButton, { color: "#35d07f", soft: "rgba(53, 208, 127, 0.14)" });
+      if (!selectedOrganization) allButton.classList.add("active-filter");
+      allButton.addEventListener("click", () => {
+        selectedOrganization = "";
+        renderControls();
+        renderList();
+      });
+      container.appendChild(allButton);
+
+      organizations.forEach(name => {
+        const item = document.createElement("button");
+        item.type = "button";
+        item.className = "legend-item";
+        if (selectedOrganization === name) item.classList.add("active-filter");
+        setEventColors(item, getOrganizationColors(name));
+        item.innerHTML = `<span class="legend-dot"></span>${escapeHtml(name)}`;
+        item.addEventListener("click", () => {
+          selectedOrganization = selectedOrganization === name ? "" : name;
+          renderControls();
+          renderList();
+        });
+        container.appendChild(item);
+      });
+    }
+
+    function renderCalendar() {
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+
+      monthTitle.textContent = new Intl.DateTimeFormat("nl-NL", {
+        month: "long",
+        year: "numeric"
+      }).format(currentDate);
+
+      daysEl.innerHTML = "";
+
+      const firstDay = new Date(year, month, 1);
+      const startOffset = (firstDay.getDay() + 6) % 7;
+      const calendarStart = new Date(year, month, 1 - startOffset);
+
+      for (let index = 0; index < 42; index++) {
+        const dayDate = new Date(calendarStart);
+        dayDate.setDate(calendarStart.getDate() + index);
+
+        const iso = toIsoDate(dayDate);
+        const dayEvents = events
+          .filter(item => item.date === iso)
+          .sort((a, b) => (a.time || "99:99").localeCompare(b.time || "99:99"));
+
+        const day = document.createElement("div");
+        day.className = "day";
+        if (dayDate.getMonth() !== month) day.classList.add("other-month");
+        if (iso === todayIso()) day.classList.add("today");
+
+        const number = document.createElement("div");
+        number.className = "day-number";
+        number.textContent = dayDate.getDate();
+        day.appendChild(number);
+
+        dayEvents.slice(0, 3).forEach(item => {
+          const pill = document.createElement("button");
+          pill.className = "event-pill";
+          setEventColors(pill, getOrganizationColors(item.organization));
+          pill.textContent = item.title;
+          pill.title = `${item.title} - ${item.organization}`;
+          pill.addEventListener("click", event => {
+            event.stopPropagation();
+            openEvent(item.id);
+          });
+          day.appendChild(pill);
+        });
+
+        if (dayEvents.length > 3) {
+          const more = document.createElement("div");
+          more.className = "event-meta";
+          more.textContent = `+${dayEvents.length - 3} meer`;
+          day.appendChild(more);
+        }
+
+        daysEl.appendChild(day);
+      }
+    }
+
+    function renderList() {
+      const today = todayIso();
+      const organization = selectedOrganization;
+
+      const list = events
+        .filter(item => item.date >= today)
+        .filter(item => !organization || item.organization === organization)
+        .sort((a, b) => `${a.date} ${a.time || "99:99"}`.localeCompare(`${b.date} ${b.time || "99:99"}`));
+
+      eventList.innerHTML = "";
+
+      if (list.length === 0) {
+        eventList.innerHTML = `<div class="empty">Geen aankomende evenementen gevonden.</div>`;
+        return;
+      }
+
+      list.forEach(item => {
+        const card = document.createElement("button");
+        card.className = "event-card";
+        card.type = "button";
+        setEventColors(card, getOrganizationColors(item.organization));
+        card.innerHTML = `
+          <span class="org-label"><span class="legend-dot"></span>${escapeHtml(item.organization)}</span>
+          <strong>${escapeHtml(item.title)}</strong>
+          <div class="event-meta">
+            ${formatDate(item.date)}${item.time ? " · " + escapeHtml(item.time) : ""}<br>
+            ${escapeHtml(item.location || "Locatie volgt")}
+          </div>
+          ${item.description ? `<div class="event-description">${escapeHtml(item.description)}</div>` : ""}
+        `;
+        card.addEventListener("click", () => openEvent(item.id));
+        eventList.appendChild(card);
+      });
+    }
+
+    function openEvent(id) {
+      selectedEvent = events.find(item => item.id === id);
+      if (!selectedEvent) return;
+
+      setEventColors(eventModalContent, getOrganizationColors(selectedEvent.organization));
+      document.getElementById("dialogTitle").textContent = selectedEvent.title;
+      document.getElementById("dialogMeta").innerHTML = [
+        formatDate(selectedEvent.date),
+        selectedEvent.time,
+        selectedEvent.location,
+        selectedEvent.organization
+      ].filter(Boolean).map(escapeHtml).join(" · ");
+      document.getElementById("dialogDescription").textContent = selectedEvent.description || "Geen omschrijving ingevuld.";
+      eventDialog.showModal();
+    }
+
+    function getOrganizations() {
+      const baseOrganizations = instellingenOrganizations.length > 0 ? instellingenOrganizations : fallbackOrganizations;
+      const eventOrganizations = events.map(item => item.organization || "Algemeen");
+      return [...new Set([...baseOrganizations, ...eventOrganizations])]
+        .sort((a, b) => a.localeCompare(b, "nl-NL"));
+    }
+
+    function getCategories() {
+      const categories = events.map(item => item.category || "Algemeen");
+      return [...new Set(["Algemeen", "Vereniging", "Muziek", "Sport", "Markt", "Vergadering", "Kinderen", "Vrijwilligers", ...categories])]
+        .sort((a, b) => a.localeCompare(b, "nl-NL"));
+    }
+
+    function getOrganizationColors(name = "Algemeen") {
+      const organizationName = name || "Algemeen";
+      const customColor = instellingenColors[organizationName];
+
+      if (customColor) {
+        return {
+          color: customColor,
+          soft: hexToSoftColor(customColor)
+        };
+      }
+
+      const organizations = getOrganizations();
+      const index = Math.max(0, organizations.indexOf(organizationName));
+      return colorPalette[index % colorPalette.length];
+    }
+
+    function setEventColors(element, colors) {
+      element.style.setProperty("--event-color", colors.color);
+      element.style.setProperty("--event-soft", colors.soft);
+    }
+
+    function normalizeColor(value) {
+      const color = clean(value);
+      if (!color) return "";
+      if (/^#[0-9a-fA-F]{6}$/.test(color)) return color;
+      if (/^[0-9a-fA-F]{6}$/.test(color)) return `#${color}`;
+      return "";
+    }
+
+    function hexToSoftColor(hex) {
+      const normalized = normalizeColor(hex);
+      if (!normalized) return "#e4f1ea";
+
+      const red = parseInt(normalized.slice(1, 3), 16);
+      const green = parseInt(normalized.slice(3, 5), 16);
+      const blue = parseInt(normalized.slice(5, 7), 16);
+
+      const mix = channel => Math.round(channel + (255 - channel) * 0.82);
+      return `rgb(${mix(red)}, ${mix(green)}, ${mix(blue)})`;
+    }
+
+    function csvToSettingsList(csv) {
+      const organizations = [];
+      const colors = {};
+
+      parseCsv(csv).forEach(row => {
+        const organization = clean(row[0]);
+        const color = normalizeColor(row[1]);
+
+        if (!organization) return;
+        if (!organizations.includes(organization)) organizations.push(organization);
+        if (color) colors[organization] = color;
+      });
+
+      return { organizations, colors };
+    }
+
+    function csvToObjects(csv) {
+      const rows = parseCsv(csv).filter(row => row.some(cell => cell.trim() !== ""));
+      if (rows.length < 2) return [];
+
+      const headers = rows[0].map(header => normalizeHeader(header));
+      return rows.slice(1).map(row => {
+        const object = {};
+        headers.forEach((header, index) => {
+          object[header] = row[index] || "";
+        });
+        return object;
+      });
+    }
+
+    function parseCsv(csv) {
+      const rows = [];
+      let row = [];
+      let value = "";
+      let insideQuotes = false;
+
+      for (let index = 0; index < csv.length; index++) {
+        const char = csv[index];
+        const next = csv[index + 1];
+
+        if (char === '"' && insideQuotes && next === '"') {
+          value += '"';
+          index++;
+        } else if (char === '"') {
+          insideQuotes = !insideQuotes;
+        } else if (char === ',' && !insideQuotes) {
+          row.push(value);
+          value = "";
+        } else if ((char === '\n' || char === '\r') && !insideQuotes) {
+          if (char === '\r' && next === '\n') index++;
+          row.push(value);
+          rows.push(row);
+          row = [];
+          value = "";
+        } else {
+          value += char;
+        }
+      }
+
+      row.push(value);
+      rows.push(row);
+      return rows;
+    }
+
+    function normalizeHeader(value) {
+      return clean(value)
+        .toLowerCase()
+        .replaceAll(" ", "")
+        .replaceAll("_", "");
+    }
+
+    function normalizeDate(value) {
+      const text = clean(value);
+      if (!text) return "";
+      if (/^\d{4}-\d{2}-\d{2}$/.test(text)) return text;
+
+      const matchDutch = text.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/);
+      if (matchDutch) {
+        const [, day, month, year] = matchDutch;
+        return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+      }
+
+      const parsed = new Date(text);
+      if (!Number.isNaN(parsed.getTime())) return toIsoDate(parsed);
+      return "";
+    }
+
+    function changeMonth(direction) {
+      currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + direction, 1);
+      renderCalendar();
+    }
+
+    function toIsoDate(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    function todayIso() {
+      return toIsoDate(new Date());
+    }
+
+    function addDaysIso(days) {
+      const date = new Date();
+      date.setDate(date.getDate() + days);
+      return toIsoDate(date);
+    }
+
+    function formatDate(iso) {
+      return new Intl.DateTimeFormat("nl-NL", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      }).format(new Date(iso + "T12:00:00"));
+    }
+
+    function clean(value) {
+      return String(value ?? "").trim();
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    loadEventsFromSheet();
+  </script>
+</body>
+</html>
