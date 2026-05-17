@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Dorpsagenda Echteld</title>
   <link rel="icon" href="logo_echteld.ico" sizes="any" />
-  <link rel="shortcut icon" href="logo_echteld.png" />
+  <link rel="shortcut icon" href="logo_echteld.ico" />
   <link rel="apple-touch-icon" href="logo_echteld.png" />
   <style>
     :root {
@@ -68,25 +68,13 @@
       pointer-events: none;
     }
 
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: clamp(10px, 2vw, 18px);
-      padding: clamp(12px, 2.2vw, 20px) clamp(18px, 4vw, 34px);
-      border-radius: 999px;
-      background: rgba(53, 208, 127, 0.13);
-      color: #dfffee;
-      border: 1px solid rgba(53, 208, 127, 0.30);
-      font-weight: 950;
-      font-size: clamp(26px, 5vw, 56px);
-      line-height: 1;
-      letter-spacing: -0.05em;
-      margin-bottom: 18px;
-      box-shadow: 0 0 34px rgba(53, 208, 127, 0.13);
-      backdrop-filter: blur(12px);
-      position: relative;
-      z-index: 1;
+    .badge {$1
+      text-align: center;
+    }
+
+    .badge span {
+      display: block;
+      text-align: center;
     }
 
     .badge-logo {
@@ -404,6 +392,8 @@
 
     .legend {
       display: flex;
+      justify-content: center;
+      align-items: center;
       gap: 8px;
       flex-wrap: wrap;
       margin: 0 0 18px;
@@ -417,6 +407,8 @@
     .org-label {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
+      text-align: center;
       gap: 7px;
       width: fit-content;
       padding: 6px 10px;
@@ -1269,3 +1261,4 @@
   </script>
 </body>
 </html>
+
