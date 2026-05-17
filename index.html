@@ -68,7 +68,25 @@
       pointer-events: none;
     }
 
-    .badge {$1
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(10px, 2vw, 18px);
+      padding: clamp(12px, 2.2vw, 20px) clamp(18px, 4vw, 34px);
+      border-radius: 999px;
+      background: rgba(53, 208, 127, 0.13);
+      color: #dfffee;
+      border: 1px solid rgba(53, 208, 127, 0.30);
+      font-weight: 950;
+      font-size: clamp(26px, 5vw, 56px);
+      line-height: 1;
+      letter-spacing: -0.05em;
+      margin-bottom: 18px;
+      box-shadow: 0 0 34px rgba(53, 208, 127, 0.13);
+      backdrop-filter: blur(12px);
+      position: relative;
+      z-index: 1;
       text-align: center;
     }
 
@@ -89,49 +107,6 @@
       box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
     }
 
-    .title-row {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: clamp(12px, 2.2vw, 22px);
-      flex-wrap: wrap;
-      position: relative;
-      z-index: 1;
-    }
-
-    .site-logo {
-      width: clamp(54px, 8vw, 92px);
-      height: clamp(54px, 8vw, 92px);
-      object-fit: contain;
-      border-radius: 22px;
-      background: rgba(255, 255, 255, 0.10);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      padding: 8px;
-      box-shadow: 0 16px 44px rgba(0, 0, 0, 0.22);
-      backdrop-filter: blur(10px);
-    }
-
-    .title-row {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: clamp(12px, 2.4vw, 24px);
-      flex-wrap: wrap;
-      position: relative;
-      z-index: 1;
-    }
-
-    .site-logo {
-      width: clamp(58px, 8vw, 96px);
-      height: clamp(58px, 8vw, 96px);
-      object-fit: contain;
-      border-radius: 24px;
-      background: rgba(255, 255, 255, 0.10);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      padding: 8px;
-      box-shadow: 0 16px 44px rgba(0, 0, 0, 0.26);
-      backdrop-filter: blur(10px);
-    }
 
     h1 {
       margin: 0;
@@ -614,15 +589,15 @@
   </style>
 </head>
 <body>
-<header>
-  <div class="badge">
-    <img class="badge-logo" src="logo_echteld.png" alt="Logo Echteld" />
-    <span>Evenementen in Echteld</span>
-  </div>
+  <header>
+    <div class="badge">
+      <img class="badge-logo" src="logo_echteld.png" alt="Logo Echteld" />
+      <span>Evenementen in Echteld</span>
+    </div>
 
-  <p class="subtitle">Een overzichtelijke kalender voor activiteiten, vergaderingen, verenigingen en dorpsfeesten.</p>
-</header>
-  
+    <p class="subtitle">Een overzichtelijke kalender voor activiteiten, vergaderingen, verenigingen en dorpsfeesten.</p>
+  </header>
+
   <nav class="topnav" aria-label="Hoofdnavigatie">
     <button id="navCalendar" class="active" data-page="calendarPage">📅 Agenda</button>
     <button id="navList" class="secondary" data-page="listPage">📋 Lijst</button>
