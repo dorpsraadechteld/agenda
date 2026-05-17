@@ -827,7 +827,10 @@
       currentDate = new Date();
       render();
     });
-    document.getElementById("refreshBtn").addEventListener("click", loadEventsFromSheet);
+    document.getElementById("refreshBtn").addEventListener("click", () => {
+      selectedOrganization = "";
+      loadEventsFromSheet();
+    });
     document.getElementById("closeDialogBtn").addEventListener("click", () => eventDialog.close());
 
     async function loadEventsFromSheet() {
@@ -888,7 +891,11 @@
         button.classList.toggle("secondary", !active);
       });
 
-      if (pageId === "listPage") renderList();
+      if (pageId === "listPage") {
+        selectedOrganization = "";
+        renderControls();
+        renderList();
+      }
     }
 
     function normalizeEvents(rawEvents) {
